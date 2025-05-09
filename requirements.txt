@@ -1,0 +1,6 @@
+gradio
+transformers
+datasets
+openai
+dotenv
+loguru
