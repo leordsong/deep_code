@@ -4,20 +4,19 @@ from typing import Optional
 from openai import OpenAI
 
 from agents.base_agent import BaseAgent
-from utils.openai_api import build_single_round_messages, reasoning_streaming_decode, _MODELS, _REASONING_MODELS
+from utils.openai_api import build_single_round_messages, reasoning_streaming_decode
 from utils.logger import logger
 
 
 class ChatOpenAIAgent(BaseAgent):
 
-    def __init__(self, api_key:str, model:str, temperature:float, base_url=None):
+    def __init__(self, api_key:str, model:str, temperature:float, reasoning:bool, base_url:Optional[str]=None):
         super().__init__()
         self.api_key = api_key
         self.model = model
-        self.base_url = base_url or _MODELS.get(model, None)
-        assert self.base_url is not None, f"Please specify the base_url for model {model}"
+        self.reasoning = reasoning
         self.temperature = temperature
-        self.reasoning = model in _REASONING_MODELS
+        self.base_url = base_url
 
     def __call__(self, system_prompt, user_prompt) -> str:
         messages = build_single_round_messages(user_prompt, system_prompt)
@@ -46,11 +45,35 @@ class ChatOpenAIAgent(BaseAgent):
         self.client.close()
 
 
-class JsonChatOpenAIAgent(ChatOpenAIAgent):
+class JsonResponseOpenAIAgent(BaseAgent):
 
-    def __init__(self, api_key:str, model:str, temperature:float, base_url=None, json_retries:int=1):
-        super().__init__(api_key, model, temperature, base_url)
+    def __init__(self, api_key:str, model:str, temperature:float, reasoning:bool, base_url:Optional[str]=None, json_retries:int=1):
+        super().__init__()
+        self.api_key = api_key
+        self.model = model
+        self.reasoning = reasoning
+        self.temperature = temperature
+        self.base_url = base_url
         self.json_retries = json_retries
+
+    def forward(self, system_prompt, user_prompt) -> str:
+        messages = build_single_round_messages(user_prompt, system_prompt)
+
+        chat_completion = self.client.chat.completions.create(
+            messages=messages,
+            model=self.model,
+            stream=self.reasoning,
+            temperature=self.temperature,
+            response_format={
+                'type': 'json_object'
+            } if not self.reasoning else None,
+        )
+
+        if self.reasoning:
+            output, _ = reasoning_streaming_decode(chat_completion)
+        else:
+            output = chat_completion.choices[0].message.content
+            return output
 
     def __call__(self, system_prompt, user_prompt) -> str:
         original_temperature = self.temperature
@@ -59,7 +82,7 @@ class JsonChatOpenAIAgent(ChatOpenAIAgent):
         while i < self.json_retries and original_temperature >= temp:
             self.temperature = original_temperature - temp
             try:
-                output = super().__call__(system_prompt, user_prompt)
+                output = self.forward(system_prompt, user_prompt)
             except json.JSONDecodeError as e:
                 logger.error(f"JSON decode error, retrying {i+1}/{self.json_retries}...")
                 if i == self.json_retries - 1:
@@ -70,4 +93,14 @@ class JsonChatOpenAIAgent(ChatOpenAIAgent):
             finally:
                 self.temperature = original_temperature
         return output
+
+    def open(self) -> None:
+        self.client = OpenAI(
+            # This is the default and can be omitted
+            api_key=self.api_key,
+            base_url=self.base_url
+        )
+
+    def close(self) -> None:
+        self.client.close()
 

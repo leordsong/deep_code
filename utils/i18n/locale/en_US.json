@@ -2,5 +2,16 @@
     "Fine-tuning": "Fine-tuning",
     "Inference": "Inference",
     "Settings": "Settings",
-    "title": "Deep code assistant"
+    "create_project": "create_project",
+    "creating_project": "creating_project",
+    "loading_embedding_model": "loading_embedding_model",
+    "loading_project_model": "loading_project_model",
+    "loading_web_app": "loading_web_app",
+    "project_name": "project_name",
+    "project_path": "project_path",
+    "select_embedding_model": "select_embedding_model",
+    "select_model": "select_model",
+    "select_project_name": "select_project_name",
+    "title": "Deep code assistant",
+    "traversing_project_path": "traversing_project_path"
 }

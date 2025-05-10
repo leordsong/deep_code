@@ -2,5 +2,16 @@
     "Fine-tuning": "微调",
     "Inference": "推理",
     "Settings": "设置",
-    "title": "AI智能代码辅助"
+    "title": "AI智能代码辅助",
+    "creating_project": "创建新项目",
+    "project_path": "代码库路径",
+    "select_project_name": "选择项目",
+    "loading_project_model": "下载模型中（首次将会很耗时）",
+    "select_embedding_model": "选择向量模型",
+    "traversing_project_path": "加载codebase文件中",
+    "loading_web_app": "加载web应用中",
+    "loading_embedding_model": "下载向量模型中（首次将会很耗时）",
+    "create_project": "创建项目",
+    "select_model": "选择Qwen模型",
+    "project_name": "项目名称"
 }

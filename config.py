@@ -3,10 +3,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv() # 从 .env 文件加载环境变量 (如果需要API Key等)
-
-# 模型相关
-BASE_MODEL_NAME = "Qwen/Qwen2.5-Coder-7B-Instruct" # 或者其他Qwen 2.5系列模型
-
+# 或者其他Qwen 2.5系列模型
 FINETUNED_MODEL_PATH = "models/qwen_finetuned"
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2" # 或者其他中英文embedding模型
 
@@ -37,6 +34,15 @@ CHAT_MODELS = {
         'model': 'qwen-coder-plus',
         'temperature': 0.5,
     }
+}
+
+LOCAL_MODELS = {
+    'Qwen2.5 Coder 7B': "Qwen/Qwen2.5-Coder-7B-Instruct"
+}
+
+EMBEDDING_MODELS = {
+    'CodeT5+ 110M': 'Salesforce/codet5p-110m-embedding',
+    'Sentence-Transformers': 'sentence-transformers/all-MiniLM-L6-v2',
 }
 
 

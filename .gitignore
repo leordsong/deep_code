@@ -10,3 +10,4 @@ wheels/
 .gradio
 .env
 logs
+cache

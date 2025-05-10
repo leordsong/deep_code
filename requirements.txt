@@ -4,3 +4,4 @@ datasets
 openai
 dotenv
 loguru
+peft
