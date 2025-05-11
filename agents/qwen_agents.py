@@ -1,9 +1,12 @@
 import gc
+from typing import List
+import os
 
 from transformers import Qwen2Tokenizer, Qwen2ForCausalLM
 import torch
 
 from agents.base_agent import BaseAgent
+from utils.logger import logger
 
 
 class QwenAgent(BaseAgent):
@@ -11,6 +14,8 @@ class QwenAgent(BaseAgent):
     def __init__(self, model_name:str):
         super().__init__()
         self.model_name = model_name
+        self.tokenizer = None
+        self.model = None
 
     def __call__(self, user_prompt, system_prompt="You are Qwen, created by Alibaba Cloud. You are a helpful assistant.") -> str:
         messages = [
@@ -30,12 +35,14 @@ class QwenAgent(BaseAgent):
         return self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]   
 
     def open(self) -> None:
+        logger.info(f"Loading Qwen model {self.model_name}...")
         self.model = Qwen2ForCausalLM.from_pretrained(
             self.model_name,
             torch_dtype="auto",
             device_map="auto",
         )
         self.tokenizer = Qwen2Tokenizer.from_pretrained(self.model_name)
+        logger.info(f"Qwen model {self.model_name} loaded successfully.")
 
     def close(self) -> None:
         del self.model
@@ -43,3 +50,13 @@ class QwenAgent(BaseAgent):
         gc.collect()
         torch.cuda.empty_cache()
 
+
+class QwenCodebaseQAAgent(QwenAgent):
+    
+    def __call__(self, question, relevant_code:List[str], system_prompt="You are Qwen. You need to answer the question based on the reterived relevant code in a codebase.") -> str:
+        user_prompt = f'Question: {question}\nRelevant code: '
+        for i,code in enumerate(relevant_code):
+            user_prompt += f'\nCode {i+1}: \n```\n{code}\n```'
+
+        answer = super().__call__(user_prompt, system_prompt)
+        return user_prompt, answer

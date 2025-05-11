@@ -1,5 +1,5 @@
 import json
-from typing import Optional
+from typing import Optional, List
 
 from openai import OpenAI
 
@@ -104,3 +104,12 @@ class JsonResponseOpenAIAgent(BaseAgent):
     def close(self) -> None:
         self.client.close()
 
+class OpenAICodebaseQAAgent(ChatOpenAIAgent):
+    
+    def __call__(self, question, relevant_code:List[str], system_prompt="You are Qwen. You need to answer the question based on the reterived relevant code in a codebase.") -> str:
+        user_prompt = f'Question: {question}\nRelevant code: '
+        for i,code in enumerate(relevant_code):
+            user_prompt += f'\nCode {i+1}: ```\n{code}\n```'
+
+        answer = super().__call__(user_prompt, system_prompt)
+        return user_prompt, answer

@@ -5,6 +5,7 @@ import gradio as gr
 
 from utils.i18n.i18n import I18nAuto, scan_language_list
 from ui_components.qa import qa
+from ui_components.design import system_design
 
 
 
@@ -31,8 +32,8 @@ with gr.Blocks() as demo:
         with gr.TabItem(i18n("QA")):
             qa(i18n, None, None, None, None)
 
-        with gr.TabItem(i18n("Inference")):
-            pass
+        with gr.TabItem(i18n("SystemDesign")):
+            system_design(i18n, None, None, None, None)
 
         with gr.TabItem(i18n("Fine-tuning")):
             pass

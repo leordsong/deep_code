@@ -9,7 +9,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel
 
 from config import REASONING_MODELS, EMBEDDING_MODELS, LOCAL_MODELS
 from utils.i18n.i18n import I18nAuto, scan_language_list
-from ui_components.startup import startup
+from agents.rag_agent import RAGAgent
+from agents.qwen_agents import QwenCodebaseQAAgent
 
 
 
@@ -41,6 +42,11 @@ def main():
         project_name = gr.Textbox(label=i18n("project_name"), value="")
 
         project_path = gr.Textbox(label=i18n("project_path"), value="")
+
+        extensions = gr.Textbox(
+            label=i18n("extensions"),
+            value=",".join(["py", "java", "cpp", "js"]),
+        ),
         
         project_model = gr.Dropdown(label=i18n("select_model"), choices=list(LOCAL_MODELS.keys()))
 
@@ -48,26 +54,49 @@ def main():
 
         create_project = gr.Button(i18n("create_project"))
 
+
         status_info = gr.Textbox(label=i18n("project_status"), visible=False)
 
         @create_project.click(
-            inputs=[projects, project_name, project_path, project_model, project_embedding_model],
+            inputs=[projects, project_name, project_path, extensions, project_model, project_embedding_model],
             outputs=[projects_dropdown, status_info]
         )
-        def create_project(projects, project_name, project_path, project_model, project_embedding_model, pg_bar=gr.Progress()):
+        def create_project(projects, project_name, project_path, extensions, project_model, project_embedding_model, pg_bar=gr.Progress()):
             pg_bar(0.1, desc=i18n("creating_project"))
+
+            cache_path = os.path.join("cache", project_name)
+            if os.path.exists(cache_path):
+                gr.Error(i18n("project_already_exists"))
+                return gr.Dropdown(label=i18n("select_project_name"), choices=projects), gr.Textbox(visible=False)
+            os.makedirs(cache_path, exist_ok=True)
+
             projects.append(project_name)
+
             pg_bar(0.2, desc=i18n("loading_project_model"))
             model_path = LOCAL_MODELS[project_model]
-            AutoModelForCausalLM.from_pretrained(model_path)
-            AutoTokenizer.from_pretrained(model_path)
+            with QwenCodebaseQAAgent(model_path) as qa_agent:
+                pass
+
             pg_bar(0.4, desc=i18n("loading_embedding_model"))
             embedding_model_path = EMBEDDING_MODELS[project_embedding_model]
-            AutoModel.from_pretrained(embedding_model_path, trust_remote_code=True)
-            AutoTokenizer.from_pretrained(embedding_model_path)
+            with RAGAgent(embedding_model_path, db_path=cache_path) as embedding_agent:
+                pass
+            
+            embedding_model = AutoModel.from_pretrained(embedding_model_path, trust_remote_code=True).to("cuda")
+            embedding_tokenizer = AutoTokenizer.from_pretrained(embedding_model_path)
+
             pg_bar(0.6, desc=i18n("traversing_project_path"))
+            exts = extensions.split(",")
+            RAGAgent.indexing(
+                embedding_model=embedding_model,
+                embedding_tokenizer=embedding_tokenizer,
+                codebase=project_path,
+                extensions=exts,
+                db_path=cache_path
+            )
+
             pg_bar(0.8, desc=i18n("loading_web_app"))
-            cmd = f'python project.py {language}'
+            cmd = f'python project.py --lang {language} --project {project_name}'
             global project_page
             project_page = Popen(cmd, shell=True)
             return gr.Dropdown(label=i18n("select_project_name"), choices=projects), gr.Textbox(value=i18n("project_status"), visible=True)

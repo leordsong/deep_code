@@ -8,6 +8,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments,
 from peft import LoraConfig, get_peft_model
 
 from agents.base_agent import BaseAgent
+from utils.logger import logger
 
 
 def initialize_qwen2_peft(
@@ -48,7 +49,7 @@ def initialize_qwen2_peft(
 
     model = get_peft_model(model, config)
     model.config.gradient_checkpointing = True
-    print(f"Model's Lora trainable parameters:")
+    logger.info(f"Model's Lora trainable parameters:")
     model.print_trainable_parameters()
     return model
 
