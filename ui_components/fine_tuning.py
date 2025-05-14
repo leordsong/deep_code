@@ -15,9 +15,12 @@ def fine_tuning(i18n, qwen_agent:QwenAgent, embedding_agent:RAGAgent, qa_train_d
     validation_data = gr.State([])
 
     # target = gr.Dropdown(label=i18n("select_target"), choices=[i18n("QA"), i18n("SystemDesign")], value=i18n("QA"))
-    epochs = gr.Slider(label=i18n("epochs"), minimum=1, maximum=10, step=1, value=1)
-    batch_size = gr.Slider(label=i18n("batch_size"), minimum=1, maximum=64, step=1, value=1)
+    epochs = gr.Slider(label=i18n("epochs"), minimum=1, maximum=10, step=1, value=2)
+    batch_size = gr.Slider(label=i18n("batch_size"), minimum=1, maximum=64, step=1, value=4)
     learning_rate = gr.Number(label=i18n("learning_rate"), value=1e-5)
+    with gr.Accordion(i18n("data_format"), open=False):
+        gr.Markdown(i18n("only_json_files"))
+        gr.Code("[\n \"...\", \n ...\n]", language='json')  # Example JSON format
 
     with gr.Row():
         with gr.Column():
@@ -110,7 +113,7 @@ def fine_tuning(i18n, qwen_agent:QwenAgent, embedding_agent:RAGAgent, qa_train_d
                 )
                 qwen_agent.model_name = training_agent.output_dir
                 pg_bar(0.8, desc=i18n("Finished"))
-            return result
+            return i18n("Finished")
         except Exception as e:
             raise gr.Error(i18n("training_failed") + str(e))
         finally:

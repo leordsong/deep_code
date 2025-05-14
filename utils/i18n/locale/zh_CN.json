@@ -46,5 +46,7 @@
     "validation_data": "验证数据",
     "wrong_answer": "修改答案（用于微调）",
     "wrong_answer_submit": "提交训练的内容",
-    "wrong_answer_text": "修改内容"
+    "wrong_answer_text": "修改内容",
+    "data_format": "数据格式",
+    "only_json_files": "只支持json文件"
 }
