@@ -82,7 +82,7 @@ class QwenCodebaseSystemDesignAgent(BaseAgent):
         self.qwen_agent = qwen_agent
     
     def __call__(self, question, tree, relevant_code:List[str], system_prompt="You are Qwen. You need to design the system based on the codebase tree structure, relevant code and question.") -> str:
-        user_prompt = f'Codebase tree structure:```\n{tree}\n```\nQuestion: {question}'
+        user_prompt = f'Codebase tree structure:\n```\n{tree}\n```\nQuestion: {question}'
         if relevant_code:
             user_prompt += "\nRelevant code: "
         for i,code in enumerate(relevant_code):

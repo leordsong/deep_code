@@ -9,7 +9,7 @@
     "clear": "清空",
     "create_project": "创建项目",
     "creating_project": "创建新项目",
-    "deepseek_api_key": "Deepseek API密钥",
+    "deepseek_api_key": "Deepseek API密钥（可选）",
     "extensions": "程序后缀名",
     "join_project": "启动项目",
     "kill_project": "关闭项目",
@@ -30,5 +30,5 @@
     "traversing_project_path": "为代码库建立RAG索引中",
     "use_deepseek": "使用deepseek",
     "wrong_answer": "错误答案",
-    "project_running": "项目启动中"
+    "project_running": "项目启动中,请稍等"
 }
