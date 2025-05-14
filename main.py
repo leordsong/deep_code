@@ -30,6 +30,10 @@ def main():
         projects = gr.State([])
 
         projects_list = [directory for directory in os.listdir("cache") if os.path.isdir(os.path.join("cache", directory))]
+
+        with gr.Group():
+            status_info = gr.Textbox(label=i18n("project_status"), visible=False)
+            kill_project_btn = gr.Button(i18n("kill_project"), visible=False)
         
 
         with gr.Group():
@@ -55,12 +59,9 @@ def main():
 
             create_project = gr.Button(i18n("create_project"))
 
-
-            status_info = gr.Textbox(label=i18n("project_status"), visible=False)
-
         @create_project.click(
             inputs=[projects, project_name, project_path, extensions, project_model, project_embedding_model, deepseek_api_key],
-            outputs=[projects_dropdown, status_info]
+            outputs=[projects_dropdown, status_info, kill_project_btn]
         )
         def create_project(
             projects, project_name, project_path, extensions, project_model,
@@ -76,7 +77,6 @@ def main():
             if os.path.exists(cache_path):
                 logger.error(f'Project {project_name} already exists')
                 raise gr.Error(i18n("project_already_exists"))
-                # return gr.Dropdown(label=i18n("select_project_name"), choices=projects), gr.Textbox(visible=False)
 
             projects.append(project_name)
 
@@ -119,25 +119,31 @@ def main():
             cmd = f'python project.py --lang {language} --project {project_name}'
             global project_page
             project_page = Popen(cmd, shell=True)
-            return gr.Dropdown(label=i18n("select_project_name"), choices=projects), gr.Textbox(value=i18n("project_status"), visible=True)
+            return gr.Dropdown(label=i18n("select_project_name"), choices=projects), gr.Textbox(value=i18n("project_status"), visible=True), gr.Button(visible=True)
         
+        @kill_project_btn.click(
+            inputs=[],
+            outputs=[status_info, kill_project_btn],
+        )
         def kill_project():
             global project_page
             if project_page:
+                logger.info(f"Killing project {project_page.pid}")
                 project_page.kill()
                 project_page = None
+            return gr.Textbox(visible=False), gr.Button(visible=False)
 
         
 
         @join_project.click(
             inputs=[projects_dropdown],
-            outputs=[projects_dropdown, status_info],
+            outputs=[projects_dropdown, status_info, kill_project_btn],
         )
         def join_project(project_name):
             cmd = f'python project.py --lang {language} --project {project_name}'
             global project_page
             project_page = Popen(cmd, shell=True)
-            return gr.Dropdown(label=i18n("select_project_name"), choices=projects_list), gr.Textbox(value=i18n("project_status"), visible=True)
+            return gr.Dropdown(label=i18n("select_project_name"), choices=projects_list), gr.Textbox(value=i18n("project_running"), visible=True), gr.Button(visible=True)
     
     demo.launch(inbrowser=True)
 

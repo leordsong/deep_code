@@ -45,7 +45,7 @@ def init_project(language, project_name):
     sys_agent = QwenCodebaseSystemDesignAgent(qwen_agent)
     qa_ds_agent = None
     sys_ds_agent = None
-    if configs["api_key"] is not None:
+    if configs["api_key"]:
         qa_ds_agent = OpenAICodebaseQAAgent(
             configs["api_key"]
         )

@@ -37,12 +37,13 @@ CHAT_MODELS = {
 }
 
 LOCAL_MODELS = {
-    'Qwen2.5 Coder 7B': "Qwen/Qwen2.5-Coder-7B-Instruct"
+    'Qwen2.5 Coder 7B': "Qwen/Qwen2.5-Coder-7B-Instruct",
+    'Qwen2.5 Coder 1.5B': "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 }
 
 EMBEDDING_MODELS = {
     'CodeT5+ 110M': 'Salesforce/codet5p-110m-embedding',
-    'Sentence-Transformers': 'sentence-transformers/all-MiniLM-L6-v2',
+    # 'Sentence-Transformers': 'sentence-transformers/all-MiniLM-L6-v2',
 }
 
 

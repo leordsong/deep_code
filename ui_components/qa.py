@@ -36,8 +36,8 @@ def qa(i18n, qa_agent, embedding_agent, ds_qa_agent=None, answers_cache_agent=No
         chat_history.append({"role": "assistant", "content": answer})        
         return "", chat_history
 
-    msg.submit(respond, [msg, chatbot], [msg, chatbot, use_deepseek])
-    submit.click(respond, [msg, chatbot], [msg, chatbot, use_deepseek])
+    msg.submit(respond, [msg, chatbot, use_deepseek], [msg, chatbot])
+    submit.click(respond, [msg, chatbot, use_deepseek], [msg, chatbot])
 
 
 if __name__ == "__main__":
