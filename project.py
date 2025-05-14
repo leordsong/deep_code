@@ -6,11 +6,13 @@ import json
 import gradio as gr
 
 from utils.i18n.i18n import I18nAuto, scan_language_list
-from ui_components.qa import qa
-from ui_components.design import system_design
+from ui_components.qa import qa_UI
+from ui_components.fine_tuning import fine_tuning
+
 from agents.rag_agent import RAGAgent
 from agents.qwen_agents import QwenCodebaseQAAgent, QwenCodebaseSystemDesignAgent, QwenAgent
 from agents.openai_agents import OpenAICodebaseQAAgent, OpenAICodebaseSystemDesignAgent
+from agents.sft_cache_agent import SFTCacheAgent
 import torch
 
 
@@ -43,6 +45,7 @@ def init_project(language, project_name):
     embedding_agent.__enter__()
     qa_agent = QwenCodebaseQAAgent(qwen_agent)
     sys_agent = QwenCodebaseSystemDesignAgent(qwen_agent)
+    # cache_agent = SFTCacheAgent(os.path.join(cache_path, "ft_data.json"))
     qa_ds_agent = None
     sys_ds_agent = None
     if configs["api_key"]:
@@ -55,18 +58,21 @@ def init_project(language, project_name):
         
 
     with gr.Blocks() as demo:
+        
+        qa_train_data = gr.State([])
+        sys_train_data = gr.State([])
         gr.Markdown('# ' + i18n("title"))
 
         with gr.Tabs():
 
             with gr.TabItem(i18n("QA")):
-                qa(i18n, qa_agent, embedding_agent, qa_ds_agent, None)
+                qa_UI(i18n, qa_agent, embedding_agent, qa_train_data, qa_ds_agent)
 
             with gr.TabItem(i18n("SystemDesign")):
-                system_design(i18n, sys_agent, embedding_agent, configs["tree"], sys_ds_agent, None)
+                qa_UI(i18n, sys_agent, embedding_agent, qa_train_data, sys_ds_agent, configs["tree"])
 
-            with gr.TabItem(i18n("Fine-tuning"), visible=False):
-                pass
+            with gr.TabItem(i18n("Fine-tuning")):
+                fine_tuning(i18n, qwen_agent, embedding_agent, qa_train_data, cache_path)
 
     return demo, (qwen_agent, embedding_agent, qa_agent, sys_agent)
     

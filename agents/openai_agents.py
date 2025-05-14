@@ -122,7 +122,7 @@ class OpenAICodebaseSystemDesignAgent(ChatOpenAIAgent):
     def __init__(self, api_key:str):
         super().__init__(api_key, model="deepseek-reasoner", temperature=0.7, reasoning=True, base_url="https://api.deepseek.com/v1")
     
-    def __call__(self, question, tree, relevant_code:List[str], system_prompt="You need to design the system based on the codebase tree structure, relevant code and question.") -> str:
+    def __call__(self, question, relevant_code:List[str], tree, system_prompt="You need to design the system based on the codebase tree structure, relevant code and question.") -> str:
         user_prompt = f'Codebase tree structure:\n```\n{tree}\n```\nQuestion: {question}'
         if relevant_code:
             user_prompt += "\nRelevant code: "

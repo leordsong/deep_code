@@ -55,11 +55,13 @@ class QwenAgent(BaseAgent):
 
 class QwenCodebaseQAAgent(BaseAgent):
 
+    SYSTEM_PROMPT = "You are Qwen. You need to answer the question based on the reterived relevant code in a codebase."
+
     def __init__(self, qwen_agent:QwenAgent):
         super().__init__()
         self.qwen_agent = qwen_agent
     
-    def __call__(self, question, relevant_code:List[str], system_prompt="You are Qwen. You need to answer the question based on the reterived relevant code in a codebase.") -> str:
+    def __call__(self, question, relevant_code:List[str], system_prompt=SYSTEM_PROMPT) -> str:
         user_prompt = f'Question: {question}'
         if relevant_code:
             user_prompt += "\nRelevant code: "
@@ -77,11 +79,13 @@ class QwenCodebaseQAAgent(BaseAgent):
     
 class QwenCodebaseSystemDesignAgent(BaseAgent):
 
+    SYSTEM_PROMPT = "You are Qwen. You need to design the system based on the codebase tree structure, relevant code and question."
+
     def __init__(self, qwen_agent:QwenAgent):
         super().__init__()
         self.qwen_agent = qwen_agent
     
-    def __call__(self, question, tree, relevant_code:List[str], system_prompt="You are Qwen. You need to design the system based on the codebase tree structure, relevant code and question.") -> str:
+    def __call__(self, question, relevant_code:List[str], tree, system_prompt=SYSTEM_PROMPT) -> str:
         user_prompt = f'Codebase tree structure:\n```\n{tree}\n```\nQuestion: {question}'
         if relevant_code:
             user_prompt += "\nRelevant code: "

@@ -84,8 +84,6 @@ class RAGAgent(BaseAgent):
         self.embedding_tokenizer = None
         if self.vectors is not None:
             self.vectors = self.vectors.cpu()
-            self.vectors = None
-        self.db_path = None
         gc.collect()
         torch.cuda.empty_cache()
 
