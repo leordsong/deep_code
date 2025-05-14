@@ -105,11 +105,29 @@ class JsonResponseOpenAIAgent(BaseAgent):
         self.client.close()
 
 class OpenAICodebaseQAAgent(ChatOpenAIAgent):
+
+    def __init__(self, api_key:str):
+        super().__init__(api_key, model="deepseek-reasoner", temperature=0.7, reasoning=True, base_url="https://api.deepseek.com/v1")
     
-    def __call__(self, question, relevant_code:List[str], system_prompt="You are Qwen. You need to answer the question based on the reterived relevant code in a codebase.") -> str:
+    def __call__(self, question, relevant_code:List[str], system_prompt="You need to answer the question based on the reterived relevant code in a codebase.") -> str:
         user_prompt = f'Question: {question}\nRelevant code: '
         for i,code in enumerate(relevant_code):
             user_prompt += f'\nCode {i+1}: ```\n{code}\n```'
+
+        answer = super().__call__(user_prompt, system_prompt)
+        return user_prompt, answer
+    
+class OpenAICodebaseSystemDesignAgent(ChatOpenAIAgent):
+
+    def __init__(self, api_key:str):
+        super().__init__(api_key, model="deepseek-reasoner", temperature=0.7, reasoning=True, base_url="https://api.deepseek.com/v1")
+    
+    def __call__(self, question, tree, relevant_code:List[str], system_prompt="You need to design the system based on the codebase tree structure, relevant code and question.") -> str:
+        user_prompt = f'Codebase tree structure:\n```\n{tree}\n```\nQuestion: {question}'
+        if relevant_code:
+            user_prompt += "\nRelevant code: "
+        for i,code in enumerate(relevant_code):
+            user_prompt += f'\nCode {i+1}: \n```\n{code}\n```'
 
         answer = super().__call__(user_prompt, system_prompt)
         return user_prompt, answer

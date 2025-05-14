@@ -6,6 +6,6 @@ from agents.openai_agents import ChatOpenAIAgent
 from agents.qwen_agents import QwenCodebaseQAAgent
 
 
-def fine_tuning(i18n, qa_agent, training_agent):
+def fine_tuning(i18n, qwen_agent, training_agent):
 
     pass

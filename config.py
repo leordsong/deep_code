@@ -47,7 +47,7 @@ EMBEDDING_MODELS = {
 
 
 # 数据存储
-DATA_DIR = "data"
+DATA_DIR = "cache"
 
 # 其他配置
 MAX_CONTEXT_LENGTH = 4096 # 根据Qwen模型调整

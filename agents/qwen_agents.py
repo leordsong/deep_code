@@ -45,18 +45,54 @@ class QwenAgent(BaseAgent):
         logger.info(f"Qwen model {self.model_name} loaded successfully.")
 
     def close(self) -> None:
+        logger.info(f"Unloading Qwen model {self.model_name}...")
+        self.model = self.model.cpu()
         del self.model
         del self.tokenizer
         gc.collect()
         torch.cuda.empty_cache()
 
 
-class QwenCodebaseQAAgent(QwenAgent):
+class QwenCodebaseQAAgent(BaseAgent):
+
+    def __init__(self, qwen_agent:QwenAgent):
+        super().__init__()
+        self.qwen_agent = qwen_agent
     
     def __call__(self, question, relevant_code:List[str], system_prompt="You are Qwen. You need to answer the question based on the reterived relevant code in a codebase.") -> str:
-        user_prompt = f'Question: {question}\nRelevant code: '
+        user_prompt = f'Question: {question}'
+        if relevant_code:
+            user_prompt += "\nRelevant code: "
         for i,code in enumerate(relevant_code):
             user_prompt += f'\nCode {i+1}: \n```\n{code}\n```'
 
-        answer = super().__call__(user_prompt, system_prompt)
+        answer = self.qwen_agent(user_prompt, system_prompt)
         return user_prompt, answer
+    
+    def open(self) -> None:
+        pass
+
+    def close(self) -> None:
+        pass
+    
+class QwenCodebaseSystemDesignAgent(BaseAgent):
+
+    def __init__(self, qwen_agent:QwenAgent):
+        super().__init__()
+        self.qwen_agent = qwen_agent
+    
+    def __call__(self, question, tree, relevant_code:List[str], system_prompt="You are Qwen. You need to design the system based on the codebase tree structure, relevant code and question.") -> str:
+        user_prompt = f'Codebase tree structure:```\n{tree}\n```\nQuestion: {question}'
+        if relevant_code:
+            user_prompt += "\nRelevant code: "
+        for i,code in enumerate(relevant_code):
+            user_prompt += f'\nCode {i+1}: \n```\n{code}\n```'
+
+        answer = self.qwen_agent(user_prompt, system_prompt)
+        return user_prompt, answer
+    
+    def open(self) -> None:
+        pass
+
+    def close(self) -> None:
+        pass
