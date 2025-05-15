@@ -52,9 +52,11 @@ def init_project(language, project_name):
         qa_ds_agent = OpenAICodebaseQAAgent(
             configs["api_key"]
         )
+        qa_ds_agent.__enter__()
         sys_ds_agent = OpenAICodebaseSystemDesignAgent(
             configs["api_key"]
         )
+        sys_ds_agent.__enter__()
         
 
     with gr.Blocks() as demo:

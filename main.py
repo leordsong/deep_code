@@ -69,6 +69,13 @@ def main():
             deepseek_api_key,
             pg_bar=gr.Progress()
         ):
+            exts = [ext for ext in extensions.split(",") if ext]
+            if not exts:
+                raise gr.Error(i18n("no_extensions_found"))
+            if not project_name:
+                raise gr.Error(i18n("no_project_name_found"))
+            if not project_path or not os.path.exists(project_path) or not os.path.isdir(project_path):
+                raise gr.Error(i18n("no_project_path_found"))
             logger.info(f"Creating project {project_name} at {project_path}")
             pg_bar(0.1, desc=i18n("creating_project"))
 
@@ -87,9 +94,9 @@ def main():
 
             pg_bar(0.4, desc=i18n("loading_embedding_model"))
             embedding_model_path = EMBEDDING_MODELS[project_embedding_model]
-            with RAGAgent(embedding_model_path, db_path=None) as rag_agent:
+            with RAGAgent(embedding_model_path, None) as rag_agent:
                 pg_bar(0.6, desc=i18n("traversing_project_path"))
-                exts = extensions.split(",")
+                
                 vectors, files, tree = RAGAgent.indexing(
                     embedding_model=rag_agent.embedding_model,
                     embedding_tokenizer=rag_agent.embedding_tokenizer,
@@ -119,7 +126,7 @@ def main():
             cmd = f'python project.py --lang {language} --project {project_name}'
             global project_page
             project_page = Popen(cmd, shell=True)
-            return gr.Dropdown(label=i18n("select_project_name"), choices=projects), gr.Textbox(value=i18n("project_status"), visible=True), gr.Button(visible=True)
+            return gr.Dropdown(label=i18n("select_project_name"), choices=projects, value=project_name), gr.Textbox(value=i18n("project_running"), visible=True), gr.Button(visible=True)
         
         @kill_project_btn.click(
             inputs=[],

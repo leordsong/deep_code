@@ -4,17 +4,20 @@
 
 ## 功能特性 🎯
 
-- [x] 完整的 **Agent-View架构**，代码 **结构清晰**，易于维护，支持 `Web界面`
-- [x] `agents\`目录下，将LLM包装成agents,具有高可扩展性
+- [x] 支持**分布式Views**架构，每个网页可以单独加载和单元测试 
+- [x] 完整的 **Agentic架构**，代码 **结构清晰**，易于维护
+- [x] `agents\`目录下，将LLM包装成agents,具有高可扩展性，未来可以训练agents。
 - [x] 支持 **双语**"：`python main.py zh_CN` 和 `python main.py en_US`
 - [x] 支持 **RAG检索**"：将codebase每一个file储存为vectors，以便于RAG agent找到最高相关性的代码
 - [x] 支持 **代码库QA**
 - [x] 支持 **代码库系统设计** 
+- [x] 支持 **微调** 
 - [x] 支持 **Deepseek**、**通义千问**等多种模型接入
 
 
 ### 后期计划 📅
 
+- [ ] 优化微调页面
 - [ ] 优化RAG系统，支持精确查找
 - [ ] 优化长文本输出和训练
 - [ ] 优化前端界面
@@ -57,6 +60,10 @@ pip install -r requirements.txt
 ### 系统设计页面
 
 ![系统设计页面](./docs/sys.png)
+
+### 微调页面
+
+![微调页面](./docs/ft.png)
 
 
 ## 相关论文

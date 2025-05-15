@@ -15,7 +15,8 @@
     "clear_validation_data": "清空微调验证数据",
     "create_project": "创建项目",
     "creating_project": "创建新项目",
-    "deepseek_api_key": "Deepseek API密钥（可选）",
+    "data_format": "数据格式",
+    "deepseek_api_key": "Deepseek API密钥（可选，可用于生成数据来微调本地模型）",
     "epochs": "epochs",
     "extensions": "程序后缀名",
     "join_project": "启动项目",
@@ -26,6 +27,7 @@
     "loading_web_app": "加载web应用中",
     "no_answer": "没有问答数据",
     "no_files_found": "代码库中没有有效文件",
+    "only_json_files": "只支持json文件",
     "project_already_exists": "项目已经存在",
     "project_name": "项目名称",
     "project_path": "代码库路径",
@@ -47,6 +49,7 @@
     "wrong_answer": "修改答案（用于微调）",
     "wrong_answer_submit": "提交训练的内容",
     "wrong_answer_text": "修改内容",
-    "data_format": "数据格式",
-    "only_json_files": "只支持json文件"
+    "no_project_name_found": "请添加名字",
+    "no_extensions_found": "请添加支持的文件后缀名",
+    "no_project_path_found": "请添加有效的代码库路径"
 }

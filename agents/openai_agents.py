@@ -32,7 +32,7 @@ class ChatOpenAIAgent(BaseAgent):
             output, _ = reasoning_streaming_decode(chat_completion)
         else:
             output = chat_completion.choices[0].message.content
-            return output
+        return output
 
     def open(self) -> None:
         self.client = OpenAI(
@@ -73,7 +73,7 @@ class JsonResponseOpenAIAgent(BaseAgent):
             output, _ = reasoning_streaming_decode(chat_completion)
         else:
             output = chat_completion.choices[0].message.content
-            return output
+        return output
 
     def __call__(self, system_prompt, user_prompt) -> str:
         original_temperature = self.temperature
